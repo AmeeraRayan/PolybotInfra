@@ -63,4 +63,4 @@ jobs:
           export YOLO_PRIVATE_IP=${{ steps.parse_ip.outputs.YOLO_PRIVATE_IP }}
           export POLYBOT_PRIVATE_IP=${{ steps.parse_ip.outputs.POLYBOT_PRIVATE_IP }}
           
-          bash test/test_bastion.sh
+          bash test_bastion.sh
