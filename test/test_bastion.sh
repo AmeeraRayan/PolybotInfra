@@ -1,7 +1,7 @@
 #!/bin/bash
-PUBLIC_IP=$(jq -r '.bastion_instance_public_ip' ../ec2_instances.json)
-POLYBOT_PRIVATE_IP=$(jq -r '.polybot_instance_private_ip' ../ec2_instances.json)
-YOLO_PRIVATE_IP=$(jq -r '.yolo_instance_private_ip' ../ec2_instances.json)
+PUBLIC_IP=$(jq -r '.bastion_instance_public_ip' "$GITHUB_WORKSPACE/ec2_instances.json")
+POLYBOT_PRIVATE_IP=$(jq -r '.polybot_instance_private_ip' "$GITHUB_WORKSPACE/ec2_instances.json")
+YOLO_PRIVATE_IP=$(jq -r '.yolo_instance_private_ip' "$GITHUB_WORKSPACE/ec2_instances.json")
 
 echo -e "\n\n\n-----------------------------------------------------------------------------------------------------------------"
 echo "Running Test Case I: Connect to the bastion instance using the SSH private key provided to the automated test in the PUBLIC_INSTANCE_SSH_KEY secret"
