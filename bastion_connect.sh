@@ -16,25 +16,27 @@ BASTION_IP=$1
 TARGET_IP=$2
 COMMAND=${@:3}
 
-# Determine the key to use for the target (Polybot or Yolo)
-if [ "$TARGET_IP" == "10.0.0.239" ]; then
-  TARGET_KEY="~/polybot-key.pem"
-elif [ "$TARGET_IP" == "10.0.1.37" ]; then
-  TARGET_KEY="~/Yolo-key.pem"
-else
-  echo "Unknown target IP. Make sure you are using the correct IPs."
-  exit 5
+# If target IP is provided – choose the correct key
+if [ -n "$TARGET_IP" ]; then
+  if [ "$TARGET_IP" == "10.0.0.239" ]; then
+    TARGET_KEY="/home/ec2-user/polybot-key.pem"
+  elif [ "$TARGET_IP" == "10.0.1.37" ]; then
+    TARGET_KEY="/home/ec2-user/Yolo-key.pem"
+  else
+    echo "Unknown target IP. Make sure you are using the correct IPs."
+    exit 5
+  fi
 fi
 
-# If no target IP is provided, connect to Bastion only
+# If no target IP is provided – connect to bastion only
 if [ -z "$TARGET_IP" ]; then
-  ssh -tt -i "$KEY_PATH" ubuntu@$BASTION_IP
+  ssh -tt -i "$KEY_PATH" ec2-user@$BASTION_IP
+
+# If target IP is provided and no command – connect to target via bastion
+elif [ -z "$COMMAND" ]; then
+  ssh -tt -i "$KEY_PATH" ec2-user@$BASTION_IP "ssh -tt -i $TARGET_KEY ec2-user@$TARGET_IP"
+
+# If command is provided – run it on target via bastion
 else
-  if [ -z "$COMMAND" ]; then
-    # Connect to target (Polybot or Yolo) via Bastion using the correct key
-    ssh -tt -i "$KEY_PATH" ubuntu@$BASTION_IP "ssh -tt -i $TARGET_KEY ubuntu@$TARGET_IP"
-  else
-    # Run command on target (Polybot or Yolo) via Bastion using the correct key
-    ssh -tt -i "$KEY_PATH" ubuntu@$BASTION_IP "ssh -tt -i $TARGET_KEY ubuntu@$TARGET_IP \"$COMMAND\""
-  fi
+  ssh -tt -i "$KEY_PATH" ec2-user@$BASTION_IP "ssh -tt -i $TARGET_KEY ec2-user@$TARGET_IP \"$COMMAND\""
 fi
