@@ -1,24 +1,40 @@
 #!/bin/bash
 
-# IPs
-BASTION_PUBLIC_IP=13.48.128.156
-YOLO_PRIVATE_IP=10.0.1.37
-POLYBOT_PRIVATE_IP=10.0.0.239
+# Check if KEY_PATH environment variable is set (for Bastion)
+if [ -z "$KEY_PATH" ]; then
+  echo "KEY_PATH env var is expected"
+  exit 5
+fi
 
-# Keys
-BASTION_KEY=bastion-key.pem
-YOLO_KEY=Yolo-key.pem
-POLYBOT_KEY=polybot-key.pem
+# Check if at least one argument (bastion IP) is provided
+if [ -z "$1" ]; then
+  echo "Please provide bastion IP address"
+  exit 5
+fi
 
-# Target to connect
-TARGET=$1  # Options: yolo / polybot
+BASTION_IP=$1
+TARGET_IP=$2
+COMMAND=${@:3}
 
-if [[ "$TARGET" == "yolo" ]]; then
-    ssh -i $BASTION_KEY -A ec2-user@$BASTION_PUBLIC_IP \
-        -t ssh -i $YOLO_KEY ec2-user@$YOLO_PRIVATE_IP
-elif [[ "$TARGET" == "polybot" ]]; then
-    ssh -i $BASTION_KEY -A ec2-user@$BASTION_PUBLIC_IP \
-        -t ssh -i $POLYBOT_KEY ec2-user@$POLYBOT_PRIVATE_IP
+# Determine the key to use for the target (Polybot or Yolo)
+if [ "$TARGET_IP" == "10.0.0.239" ]; then
+  TARGET_KEY="~/polybot-key.pem"
+elif [ "$TARGET_IP" == "10.0.1.37" ]; then
+  TARGET_KEY="~/Yolo-key.pem"
 else
-    echo "Usage: ./bastion_connect.sh [yolo|polybot]"
+  echo "Unknown target IP. Make sure you are using the correct IPs."
+  exit 5
+fi
+
+# If no target IP is provided, connect to Bastion only
+if [ -z "$TARGET_IP" ]; then
+  ssh -tt -i "$KEY_PATH" ubuntu@$BASTION_IP
+else
+  if [ -z "$COMMAND" ]; then
+    # Connect to target (Polybot or Yolo) via Bastion using the correct key
+    ssh -tt -i "$KEY_PATH" ubuntu@$BASTION_IP "ssh -tt -i $TARGET_KEY ubuntu@$TARGET_IP"
+  else
+    # Run command on target (Polybot or Yolo) via Bastion using the correct key
+    ssh -tt -i "$KEY_PATH" ubuntu@$BASTION_IP "ssh -tt -i $TARGET_KEY ubuntu@$TARGET_IP \"$COMMAND\""
+  fi
 fi
