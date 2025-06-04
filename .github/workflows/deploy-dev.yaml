@@ -1,4 +1,4 @@
-name: Deploy Nginx Dev Config
+name: Deploy Nginx Dev config
 
 on:
   push:

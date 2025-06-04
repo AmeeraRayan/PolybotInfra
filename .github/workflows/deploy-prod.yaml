@@ -1,4 +1,4 @@
-name: Deploy Nginx Prod Config
+name: Deploy Nginx Prod config
 
 on:
   push:
