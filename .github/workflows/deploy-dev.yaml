@@ -22,7 +22,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "nginx-config/default.conf"
-          target: "/etc/nginx/conf.d/default.conf"
+          target: "/etc/nginx/conf.d/"
           overwrite: true
 
       - name: Reload Nginx on Dev EC2

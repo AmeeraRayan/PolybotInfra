@@ -22,7 +22,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "nginx-config/prod.conf"
-          target: "/etc/nginx/conf.d/prod.conf"
+          target: "/etc/nginx/conf.d/"
           overwrite: true
 
       - name: Reload Nginx on Prod EC2
