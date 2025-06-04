@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - dev
-    paths:
-      - 'nginx-config/default.conf'
 
 jobs:
   deploy-nginx-dev:
