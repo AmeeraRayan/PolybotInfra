@@ -9,7 +9,7 @@ mkdir -p /home/ubuntu/conf.d
 mkdir -p /etc/nginx/ssl
 
 # Run nginx container
-sudo docker run -d --name mynginx -p 443:443 \
+sudo docker run -d --name mynginx --restart always -p 443:443 \
   -v /home/ubuntu/conf.d:/etc/nginx/conf.d \
   -v /etc/nginx/ssl:/etc/nginx/ssl \
   nginx
