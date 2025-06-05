@@ -32,7 +32,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "scripts/deploy_nginx_container.sh"
-          target: "~"
+          target: "/home/ubuntu/"
           overwrite: true
 
       # ✅ Run the script remotely via SSH
@@ -43,5 +43,5 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            chmod +x ~/deploy_nginx_container.sh
-            ~/deploy_nginx_container.sh
+            chmod +x /home/ubuntu/deploy_nginx_container.sh
+            /home/ubuntu/deploy_nginx_container.sh
