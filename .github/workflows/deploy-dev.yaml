@@ -43,5 +43,5 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            chmod +x /home/ubuntu/deploy_nginx_container.sh
-            bash /home/ubuntu/deploy_nginx_container.sh
+            chmod +x /home/ubuntu/scripts/deploy_nginx_container.sh
+            bash /home/ubuntu/scripts/deploy_nginx_container.sh
