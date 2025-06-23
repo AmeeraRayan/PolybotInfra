@@ -1,0 +1,20 @@
+name: Initialize Kubernetes Cluster
+
+on:
+  workflow_dispatch:  # This allows you to run it manually from GitHub Actions tab
+
+jobs:
+  init-k8s:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Connect via SSH and run kubeadm init
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.CONTROL_PLANE_IP }}
+        username: ubuntu
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          curl -O https://raw.githubusercontent.com/AmeeraRayan/PolybotInfra/main/scripts/kubeadm-init.sh
+          chmod +x kubeadm-init.sh
+          ./kubeadm-init.sh
