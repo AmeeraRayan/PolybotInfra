@@ -20,7 +20,7 @@ jobs:
           terraform_version: 1.5.7
 
       - name: Terraform Init
-        run: cd tf && terraform init
+        run: terraform init
 
       - name: Terraform Plan
         run: cd tf && terraform plan -var-file="region.eu-north-1.tfvars"
