@@ -13,7 +13,42 @@ resource "aws_internet_gateway" "igw" {
     Name = "ameera-igw-${var.env}"
   }
 }
+# IAM Role for control plane EC2 instance
+resource "aws_iam_role" "control_plane_role" {
+  name = "ameera-k8s-control-plane-role"
 
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+    }]
+  })
+}
+
+# Attach necessary policies to the control plane IAM role
+resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+  role       = aws_iam_role.control_plane_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "ebs_csi_policy" {
+  role       = aws_iam_role.control_plane_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_readonly" {
+  role       = aws_iam_role.control_plane_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+# Instance profile for EC2
+resource "aws_iam_instance_profile" "control_plane_profile" {
+  name = "ameera-k8s-control-plane-profile"
+  role = aws_iam_role.control_plane_role.name
+}
 resource "aws_subnet" "public_subnets" {
   count             = 2
   vpc_id            = aws_vpc.k8s_vpc.id
@@ -47,10 +82,11 @@ resource "aws_route_table_association" "public_assoc" {
 
 resource "aws_security_group" "control_plane_sg" {
   name        = "control-plane-sg-${var.env}"
-  description = "Allow SSH and Kubernetes traffic"
+  description = "Allow SSH, Kubernetes API, and internal VPC traffic"
   vpc_id      = aws_vpc.k8s_vpc.id
 
   ingress {
+    description = "SSH from anywhere"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -58,6 +94,7 @@ resource "aws_security_group" "control_plane_sg" {
   }
 
   ingress {
+    description = "Kubernetes API traffic"
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"
@@ -65,6 +102,7 @@ resource "aws_security_group" "control_plane_sg" {
   }
 
   ingress {
+    description = "Allow all traffic within the VPC"
     from_port   = 0
     to_port     = 65535
     protocol    = "tcp"
@@ -72,6 +110,7 @@ resource "aws_security_group" "control_plane_sg" {
   }
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -92,6 +131,7 @@ resource "aws_instance" "control_plane" {
   vpc_security_group_ids      = [aws_security_group.control_plane_sg.id]
 
   user_data = file("${path.module}/user_data_control_plane.sh")
+  iam_instance_profile = aws_iam_instance_profile.control_plane_profile.name
 
   tags = {
     Name = "ameera-k8s-control-plane"
