@@ -29,6 +29,7 @@ resource "aws_iam_role" "control_plane_role" {
   })
 }
 
+
 # Attach necessary policies to the control plane IAM role
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
   role       = aws_iam_role.control_plane_role.name
@@ -44,6 +45,12 @@ resource "aws_iam_role_policy_attachment" "ecr_readonly" {
   role       = aws_iam_role.control_plane_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
+
+resource "aws_iam_role_policy_attachment" "s3_full_access" {
+  role       = aws_iam_role.control_plane_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
 # Instance profile for EC2
 resource "aws_iam_instance_profile" "control_plane_profile" {
   name = "ameera-k8s-control-plane-profile"
