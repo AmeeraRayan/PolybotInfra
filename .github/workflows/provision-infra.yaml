@@ -20,10 +20,13 @@ jobs:
           terraform_version: 1.5.7
 
       - name: Terraform Init
+        working-directory: tf
         run: terraform init
 
       - name: Terraform Plan
-        run: cd tf && terraform plan -var-file="region.eu-north-1.tfvars"
+        working-directory: tf
+        run: terraform plan -var-file="region.eu-north-1.tfvars"
 
       - name: Terraform Apply
-        run: cd tf && terraform apply -auto-approve -var-file="region.eu-north-1.tfvars"
+        working-directory: tf
+        run: terraform apply -auto-approve -var-file="region.eu-north-1.tfvars"

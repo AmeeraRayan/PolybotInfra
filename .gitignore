@@ -3,7 +3,6 @@
 *.tfstate
 *.tfstate.backup
 *.log
-terraform.tfvars
 crash.log
 *.zip
 *.tar.gz
