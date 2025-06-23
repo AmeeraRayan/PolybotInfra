@@ -18,8 +18,5 @@ jobs:
       with:
         terraform_version: 1.6.6
 
-    - name: Terraform Init
-      run: terraform -chdir=tf init
-
     - name: Terraform Apply
       run: terraform -chdir=tf apply -var-file=tf/region.eu-north-1.tfvars -auto-approve
