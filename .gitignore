@@ -1,1 +1,11 @@
 *.pem
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.log
+*.tfvars
+terraform.tfvars
+crash.log
+*.zip
+*.tar.gz
+hashicorp/
