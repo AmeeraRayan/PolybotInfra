@@ -4,6 +4,7 @@
 *.tfstate.backup
 *.log
 *.tfvars
+!region.eu-north-1.tfvars
 terraform.tfvars
 crash.log
 *.zip
