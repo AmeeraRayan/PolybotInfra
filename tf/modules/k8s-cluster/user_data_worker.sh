@@ -49,4 +49,4 @@ JOIN_COMMAND=$(aws secretsmanager get-secret-value \
   --output text)
 
 # Execute the join command
-eval "$JOIN_COMMAND"
+sudo bash -c "$JOIN_COMMAND"
