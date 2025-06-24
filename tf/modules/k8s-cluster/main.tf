@@ -163,6 +163,8 @@ resource "aws_launch_template" "worker_lt" {
 
   key_name = var.key_name
 
+  vpc_security_group_ids = [aws_security_group.worker_sg.id]
+
   user_data = base64encode(file("${path.module}/user_data_worker.sh"))
 
   tag_specifications {
@@ -173,25 +175,36 @@ resource "aws_launch_template" "worker_lt" {
   }
 }
 
-resource "aws_autoscaling_group" "worker_asg" {
-  name                      = "k8s-worker-asg-${var.env}"
-  desired_capacity          = 1
-  max_size                  = 3
-  min_size                  = 1
-  vpc_zone_identifier       = aws_subnet.public_subnets[*].id
-  health_check_type         = "EC2"
-  launch_template {
-    id      = aws_launch_template.worker_lt.id
-    version = "$Latest"
+resource "aws_security_group" "worker_sg" {
+  name        = "worker-sg-${var.env}"
+  description = "Allow traffic for worker nodes"
+  vpc_id      = aws_vpc.k8s_vpc.id
+
+  ingress {
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Replace with your IP for better security
   }
 
-  tag {
-    key                 = "Name"
-    value               = "k8s-worker-${var.env}"
-    propagate_at_launch = true
+  ingress {
+    description = "Allow all traffic from within VPC"
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
   }
 
-  lifecycle {
-    create_before_destroy = true
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "ameera-worker-sg-${var.env}"
   }
 }
