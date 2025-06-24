@@ -59,6 +59,12 @@ resource "aws_iam_instance_profile" "control_plane_profile" {
   name = "ameera-k8s-control-plane-profile"
   role = aws_iam_role.control_plane_role.name
 }
+
+resource "aws_iam_instance_profile" "worker_profile" {
+  name = "ameera-k8s-worker-profile"
+  role = aws_iam_role.control_plane_role.name
+}
+
 resource "aws_subnet" "public_subnets" {
   count             = 2
   vpc_id            = aws_vpc.k8s_vpc.id
@@ -195,6 +201,10 @@ resource "aws_launch_template" "worker_lt" {
   instance_type = var.instance_type
 
   key_name = var.key_name
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.worker_profile.name
+  }
 
   network_interfaces {
     associate_public_ip_address = true
