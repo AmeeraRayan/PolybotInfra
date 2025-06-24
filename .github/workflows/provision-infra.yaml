@@ -32,7 +32,7 @@ jobs:
 
       - name: Terraform Plan
         working-directory: tf
-        run: terraform plan -auto-approve -var-file="region.eu-north-1.tfvars"
+        run: terraform plan -var-file="region.eu-north-1.tfvars"
 
       - name: Terraform Apply
         working-directory: tf
