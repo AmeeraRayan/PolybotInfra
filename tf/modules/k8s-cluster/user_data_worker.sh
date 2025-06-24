@@ -50,3 +50,11 @@ JOIN_COMMAND=$(aws secretsmanager get-secret-value \
 
 # Execute the join command
 eval "$JOIN_COMMAND"
+
+# Retry loop to label the node once it's fully joined
+for i in {1..10}; do
+  NODE_NAME=$(hostname)
+  kubectl label node $NODE_NAME node-role.kubernetes.io/worker=worker --kubeconfig=/etc/kubernetes/kubelet.conf && break
+  echo "Retrying node labeling... ($i)"
+  sleep 15
+done
