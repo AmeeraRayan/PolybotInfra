@@ -3,8 +3,14 @@ name: Initialize Kubernetes Cluster
 on:
   workflow_dispatch:  # This allows you to run it manually from GitHub Actions tab
 
+  workflow_run: # Automatically trigger after provision-infra.yaml finishes successfully
+    workflows: [ "Provision K8s Infrastructure" ]
+    types:
+      - completed
+
 jobs:
   init-k8s:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
