@@ -147,3 +147,11 @@ resource "aws_instance" "control_plane" {
     Name = "ameera-k8s-control-plane"
   }
 }
+
+resource "aws_eip" "control_plane_eip" {
+  instance = aws_instance.control_plane.id
+
+  tags = {
+    Name = "ameera-control-plane-eip-${var.env}"
+  }
+}
