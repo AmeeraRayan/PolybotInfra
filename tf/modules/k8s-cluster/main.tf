@@ -52,7 +52,7 @@ resource "aws_iam_role_policy_attachment" "s3_full_access" {
 }
 resource "aws_iam_role_policy_attachment" "secrets_manager_access" {
   role       = aws_iam_role.control_plane_role.name
-  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerFullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AWSSecretsManagerFullAccess"
 }
 # Instance profile for EC2
 resource "aws_iam_instance_profile" "control_plane_profile" {
