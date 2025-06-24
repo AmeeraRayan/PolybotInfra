@@ -196,7 +196,10 @@ resource "aws_launch_template" "worker_lt" {
 
   key_name = var.key_name
 
-  vpc_security_group_ids = [aws_security_group.worker_sg.id]
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups             = [aws_security_group.worker_sg.id]
+  }
 
   user_data = base64encode(file("${path.module}/user_data_worker.sh"))
 
