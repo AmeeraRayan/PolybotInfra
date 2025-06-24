@@ -175,6 +175,29 @@ resource "aws_launch_template" "worker_lt" {
   }
 }
 
+resource "aws_autoscaling_group" "worker_asg" {
+  name                      = "k8s-worker-asg-${var.env}"
+  desired_capacity          = 1
+  max_size                  = 3
+  min_size                  = 1
+  vpc_zone_identifier       = aws_subnet.public_subnets[*].id
+  health_check_type         = "EC2"
+  launch_template {
+    id      = aws_launch_template.worker_lt.id
+    version = "$Latest"
+  }
+
+  tag {
+    key                 = "Name"
+    value               = "k8s-worker-${var.env}"
+    propagate_at_launch = true
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 resource "aws_security_group" "worker_sg" {
   name        = "worker-sg-${var.env}"
   description = "Allow traffic for worker nodes"
