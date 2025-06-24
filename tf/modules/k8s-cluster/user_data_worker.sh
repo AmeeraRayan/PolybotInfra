@@ -31,10 +31,16 @@ sudo apt-get install -y cri-o kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
 # Start CRI-O and kubelet
-sudo systemctl start crio
+# Label the node as a worker before kubelet starts
+echo 'KUBELET_EXTRA_ARGS=--node-labels=node-role.kubernetes.io/worker=worker' | sudo tee /etc/default/kubelet
+
+# Start CRI-O and kubelet
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
 sudo systemctl enable crio
 sudo systemctl enable kubelet
-
+sudo systemctl start crio
+sudo systemctl start kubelet
 # Disable swap
 swapoff -a
 (crontab -l ; echo "@reboot /sbin/swapoff -a") | crontab -
