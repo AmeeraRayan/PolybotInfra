@@ -156,6 +156,39 @@ resource "aws_eip" "control_plane_eip" {
   }
 }
 
+resource "aws_security_group" "worker_sg" {
+  name        = "worker-sg-${var.env}"
+  description = "Allow traffic for worker nodes"
+  vpc_id      = aws_vpc.k8s_vpc.id
+
+  ingress {
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Replace with your IP for better security
+  }
+
+  ingress {
+    description = "Allow all traffic from within VPC"
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "ameera-worker-sg-${var.env}"
+  }
+}
 resource "aws_launch_template" "worker_lt" {
   name_prefix   = "k8s-worker-${var.env}-"
   image_id      = var.ami_id
@@ -198,36 +231,5 @@ resource "aws_autoscaling_group" "worker_asg" {
   }
 }
 
-resource "aws_security_group" "worker_sg" {
-  name        = "worker-sg-${var.env}"
-  description = "Allow traffic for worker nodes"
-  vpc_id      = aws_vpc.k8s_vpc.id
 
-  ingress {
-    description = "SSH from anywhere"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Replace with your IP for better security
-  }
 
-  ingress {
-    description = "Allow all traffic from within VPC"
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
-  }
-
-  egress {
-    description = "Allow all outbound traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "ameera-worker-sg-${var.env}"
-  }
-}
