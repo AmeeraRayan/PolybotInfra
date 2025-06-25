@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Generate new kubeadm join command
-JOIN_CMD=$(kubeadm token create --print-join-command)
-
+# 🧠 Generate new kubeadm join command with sudo
+JOIN_CMD=$(echo "sudo $(kubeadm token create --print-join-command)")
 # Save it to a temporary file
 echo "$JOIN_CMD" > /tmp/k8s_join.sh
 
