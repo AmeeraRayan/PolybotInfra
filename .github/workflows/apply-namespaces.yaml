@@ -20,4 +20,8 @@ jobs:
         username: ubuntu
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          rm -rf PolybotInfra
+          git clone https://github.com/AmeeraRayan/PolybotInfra.git
+          cd PolybotInfra
+          git checkout feature/k8s_deploy_polybot_dev
           kubectl apply -f k8s-manifests/namespaces/
