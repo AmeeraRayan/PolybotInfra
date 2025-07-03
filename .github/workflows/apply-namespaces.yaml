@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'k8s-manifests/namespaces/**'
+  workflow_dispatch:       # allow manual trigger too
+
 
 jobs:
   apply-namespaces:
