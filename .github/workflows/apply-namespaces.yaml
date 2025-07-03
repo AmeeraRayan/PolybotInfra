@@ -1,0 +1,25 @@
+name: Apply K8s Namespaces
+
+on:
+  push:
+    paths:
+      - 'k8s-manifests/namespaces/**'
+
+jobs:
+  apply-namespaces:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: SSH and apply namespace manifests
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.CONTROL_PLANE_IP }}
+        username: ubuntu
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd PolybotInfra || git clone https://github.com/AmeeraRayan/PolybotInfra.git && cd PolybotInfra
+          git pull origin main
+          kubectl apply -f k8s-manifests/namespaces/
