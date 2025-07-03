@@ -1,11 +1,6 @@
 name: Apply K8s Namespaces
 
 on:
-   push:
-     branches:
-       - '**'
-     paths:
-       - 'k8s-manifests/namespaces/**'
    workflow_dispatch:
 
 
