@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: polybot
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: polybot
+  template:
+    metadata:
+      labels:
+        app: polybot
+    spec:
+      containers:
+      - name: polybot
+        image: ameerarayan/polybot-dev:97
+        ports:
+        - containerPort: 8443
+        env:
+          - name: TELEGRAM_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: polybot-secret
+                key: TELEGRAM_TOKEN
+
+          - name: TELEGRAM_CHAT_URL
+            valueFrom:
+              secretKeyRef:
+                name: polybot-secret
+                key: TELEGRAM_CHAT_URL
+
+          - name: YOLO_URL
+            valueFrom:
+              secretKeyRef:
+                name: polybot-secret
+                key: YOLO_URL
+
+          - name: S3_BUCKET_NAME
+            valueFrom:
+              secretKeyRef:
+                name: polybot-secret
+                key: S3_BUCKET_NAME
+
+          - name: TELEGRAM_CERT_FILE
+            valueFrom:
+              secretKeyRef:
+                name: polybot-secret
+                key: TELEGRAM_CERT_FILE
+
+          - name: SQS_QUEUE_URL
+            valueFrom:
+              secretKeyRef:
+                name: polybot-secret
+                key: SQS_QUEUE_URL
+
+          - name: STORAGE_TYPE
+            value: dynamodb
+
+          - name: AWS_REGION
+            valueFrom:
+              secretKeyRef:
+                name: polybot-secret
+                key: AWS_REGION
+
+          - name: DYNAMODB_TABLE
+            valueFrom:
+              secretKeyRef:
+                name: polybot-secret
+                key: DYNAMODB_TABLE

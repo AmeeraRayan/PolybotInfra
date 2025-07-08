@@ -33,3 +33,7 @@ variable "vpc_cidr" {
   type        = string
 }
 
+variable "acm_certificate_arn" {
+  description = "ARN of the ACM certificate"
+  type        = string
+}

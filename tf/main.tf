@@ -15,4 +15,5 @@ module "k8s_cluster" {
   key_name      = "polybot-key"
   vpc_cidr      = "10.0.0.0/16"
   azs           = ["eu-north-1a", "eu-north-1b"]
+  acm_certificate_arn = var.acm_certificate_arn
 }
