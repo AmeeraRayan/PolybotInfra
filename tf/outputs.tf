@@ -6,3 +6,8 @@ output "worker_asg_name" {
   description = "Auto Scaling Group name for worker nodes"
   value = module.k8s_cluster.worker_asg_name
 }
+
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = module.k8s_cluster.telegram_alb_dns
+}

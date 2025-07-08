@@ -27,3 +27,8 @@ variable "azs" {
   description = "Availability Zones"
   type        = list(string)
 }
+
+variable "acm_certificate_arn" {
+  description = "ARN of the ACM certificate"
+  type        = string
+}

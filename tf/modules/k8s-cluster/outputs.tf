@@ -7,3 +7,7 @@ output "worker_asg_name" {
   description = "Name of the Auto Scaling Group for workers"
   value       = aws_autoscaling_group.worker_asg.name
 }
+output "telegram_alb_dns" {
+  description = "DNS name of the ALB"
+  value       = aws_lb.telegram_alb.dns_name
+}
