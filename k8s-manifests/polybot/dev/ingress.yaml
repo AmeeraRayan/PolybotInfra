@@ -2,16 +2,17 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: polybot
+  namespace: dev
 spec:
   ingressClassName: nginx
   rules:
-    - host: dev.ameera.fursa.click
+    - host: polybot.ameera.fursa.click
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: service-polybot
+                name: polybot-service
                 port:
                   number: 8443
