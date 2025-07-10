@@ -31,12 +31,6 @@ spec:
                 name: polybot-secret
                 key: TELEGRAM_CHAT_URL
 
-          - name: YOLO_URL
-            valueFrom:
-              secretKeyRef:
-                name: polybot-secret
-                key: YOLO_URL
-
           - name: S3_BUCKET_NAME
             valueFrom:
               secretKeyRef:
