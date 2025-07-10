@@ -252,6 +252,23 @@ resource "aws_security_group" "worker_sg" {
     Name = "ameera-worker-sg-${var.env}"
   }
 }
+
+
+resource "aws_iam_role_policy_attachment" "worker_s3_access" {
+  role       = aws_iam_role.control_plane_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "worker_dynamodb_access" {
+  role       = aws_iam_role.control_plane_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "worker_sqs_access" {
+  role       = aws_iam_role.control_plane_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
+}
+
 resource "aws_launch_template" "worker_lt" {
   name_prefix   = "k8s-worker-${var.env}-"
   image_id      = var.ami_id
