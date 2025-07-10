@@ -290,7 +290,7 @@ resource "aws_launch_template" "worker_lt" {
   block_device_mappings {
     device_name = "/dev/sda1" # This is usually the root device on Amazon Linux/Ubuntu
     ebs {
-      volume_size = 20        # 🔥 Set root volume size to 20 GiB
+      volume_size = 30        # 🔥 Set root volume size to 20 GiB
       volume_type = "gp3"     # or "gp2"
       delete_on_termination = true
     }
