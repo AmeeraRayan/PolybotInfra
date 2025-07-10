@@ -109,6 +109,14 @@ resource "aws_security_group" "control_plane_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+    ingress {
+    description = "SSH from anywhere"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   ingress {
     description = "Kubernetes API traffic"
     from_port   = 6443
@@ -121,6 +129,30 @@ resource "aws_security_group" "control_plane_sg" {
     description = "Allow all traffic within the VPC"
     from_port   = 0
     to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  ingress {
+    description = "Allow all traffic within the VPC"
+    from_port   = 0
+    to_port     = 0
+    protocol    = -1
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  ingress {
+    description = "Allow all traffic within the VPC"
+    from_port   = 10250
+    to_port     = 10250
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  ingress {
+    description = "Allow all traffic within the VPC"
+    from_port   = 32533
+    to_port     = 32533
     protocol    = "tcp"
     cidr_blocks = [var.vpc_cidr]
   }
@@ -176,6 +208,14 @@ resource "aws_security_group" "worker_sg" {
   }
 
   ingress {
+    description = "Allow all traffic to kubelet "
+    from_port   = 10250
+    to_port     = 10250
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Replace with your IP for better security
+  }
+
+  ingress {
     description = "Allow all traffic from within VPC"
     from_port   = 32533
     to_port     = 32533
@@ -183,6 +223,23 @@ resource "aws_security_group" "worker_sg" {
     cidr_blocks = [var.vpc_cidr]
   }
 
+   ingress {
+    description = "Allow NodePort range"
+    from_port   = 30630
+    to_port     = 30630
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+
+  }
+
+  ingress {
+    description = "Allow NodePort range"
+    from_port   = 0
+    to_port     = 0
+    protocol    = -1
+    cidr_blocks = ["0.0.0.0/16"]
+
+  }
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
@@ -212,6 +269,15 @@ resource "aws_launch_template" "worker_lt" {
   }
 
   user_data = base64encode(file("${path.module}/user_data_worker.sh"))
+
+  block_device_mappings {
+    device_name = "/dev/sda1" # This is usually the root device on Amazon Linux/Ubuntu
+    ebs {
+      volume_size = 20        # 🔥 Set root volume size to 20 GiB
+      volume_type = "gp3"     # or "gp2"
+      delete_on_termination = true
+    }
+  }
 
   tag_specifications {
     resource_type = "instance"
@@ -247,19 +313,19 @@ resource "aws_autoscaling_group" "worker_asg" {
 
 resource "aws_lb_target_group" "telegram_target_group" {
   name        = "telegram-target-group-${var.env}"
-  port        = 32533                           # NodePort of your ingress-nginx
+  port        = 30630                           # NodePort of your ingress-nginx
   protocol    = "HTTP"
   target_type = "instance"
   vpc_id      = aws_vpc.k8s_vpc.id
 
   health_check {
     path                = "/healthz"
-    port                = "32533"
+    port                = "30630"
     protocol            = "HTTP"
-    matcher             = "200"
+    matcher             = "200-399"
     interval            = 30
     timeout             = 5
-    healthy_threshold   = 5
+    healthy_threshold   = 2
     unhealthy_threshold = 2
   }
 
@@ -305,6 +371,15 @@ resource "aws_security_group" "lb_sg" {
   }
 }
 
+resource "aws_security_group_rule" "allow_worker_to_worker_all" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.worker_sg.id
+  source_security_group_id = aws_security_group.worker_sg.id
+  description       = "Allow all traffic between worker nodes"
+}
 
 resource "aws_lb_listener" "https_listener" {
   load_balancer_arn = aws_lb.telegram_alb.arn

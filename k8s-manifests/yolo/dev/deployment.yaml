@@ -18,3 +18,39 @@ spec:
         image: ameerarayan/yoloservice-dev:42
         ports:
         - containerPort: 8000
+        env:
+          - name: IMG_NAME
+            valueFrom:
+              secretKeyRef:
+                name: yolo-secret
+                key: IMG_NAME
+
+          - name: SQS_QUEUE_URL
+            valueFrom:
+              secretKeyRef:
+                name: yolo-secret
+                key: SQS_QUEUE_URL
+
+          - name: STORAGE_TYPE
+            valueFrom:
+              secretKeyRef:
+                name: yolo-secret
+                key: STORAGE_TYPE
+
+          - name: AWS_REGION
+            valueFrom:
+              secretKeyRef:
+                name: yolo-secret
+                key: AWS_REGION
+
+          - name: DYNAMODB_TABLE
+            valueFrom:
+              secretKeyRef:
+                name: yolo-secret
+                key: DYNAMODB_TABLE
+
+          - name: POLYBOT_URL
+            valueFrom:
+              secretKeyRef:
+                name: yolo-secret
+                key: POLYBOT_URL
