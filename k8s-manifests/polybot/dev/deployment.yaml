@@ -13,6 +13,11 @@ spec:
       labels:
         app: polybot
     spec:
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
+          - 1.1.1.1
       containers:
       - name: polybot
         image: ameerarayan/polybot-dev:97
