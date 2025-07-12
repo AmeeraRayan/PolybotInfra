@@ -3,6 +3,9 @@ kind: Ingress
 metadata:
   name: polybot
   namespace: prod
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+
 spec:
   ingressClassName: nginx
   rules:
