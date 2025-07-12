@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: polybot
+  namespace: dev
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
@@ -14,6 +15,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: polybot-service-dev
+                name: polybot-service
                 port:
                   number: 8443
