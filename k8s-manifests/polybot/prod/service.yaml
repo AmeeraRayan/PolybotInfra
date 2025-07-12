@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: polybot-service-prod
+  name: polybot-service
+  namespace: prod
 spec:
   selector:
     app: polybot
