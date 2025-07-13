@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: polybot-dev
+  namespace: argocd   # Must be where ArgoCD is installed
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/AmeeraRayan/PolybotInfra.git'
+    targetRevision: main
+    path: k8s-manifests/polybot/dev/
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
