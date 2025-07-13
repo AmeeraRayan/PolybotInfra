@@ -151,11 +151,20 @@ resource "aws_security_group" "control_plane_sg" {
 
   ingress {
     description = "Allow all traffic within the VPC"
-    from_port   = 32533
-    to_port     = 32533
+    from_port   = 31782
+    to_port     = 31782
     protocol    = "tcp"
     cidr_blocks = [var.vpc_cidr]
   }
+
+    ingress {
+    description = "Allow all traffic within the VPC"
+    from_port   = 30574
+    to_port     = 30574
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
 
   egress {
     description = "Allow all outbound traffic"
@@ -217,16 +226,16 @@ resource "aws_security_group" "worker_sg" {
 
   ingress {
     description = "Allow all traffic from within VPC"
-    from_port   = 32533
-    to_port     = 32533
+    from_port   = 30574
+    to_port     = 30574
     protocol    = "tcp"
     cidr_blocks = [var.vpc_cidr]
   }
 
    ingress {
     description = "Allow NodePort range"
-    from_port   = 30630
-    to_port     = 30630
+    from_port   = 31782
+    to_port     = 31782
     protocol    = "tcp"
     cidr_blocks = [var.vpc_cidr]
 
@@ -330,14 +339,14 @@ resource "aws_autoscaling_group" "worker_asg" {
 
 resource "aws_lb_target_group" "telegram_target_group" {
   name        = "telegram-target-group-${var.env}"
-  port        = 30630                           # NodePort of your ingress-nginx
+  port        = 31782                          # NodePort of your ingress-nginx
   protocol    = "HTTP"
   target_type = "instance"
   vpc_id      = aws_vpc.k8s_vpc.id
 
   health_check {
     path                = "/healthz"
-    port                = "30630"
+    port                = "31782"
     protocol            = "HTTP"
     matcher             = "200-399"
     interval            = 30
