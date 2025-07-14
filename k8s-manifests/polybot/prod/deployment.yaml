@@ -37,12 +37,6 @@ spec:
                 name: polybot-secret
                 key: S3_BUCKET_NAME
 
-          - name: TELEGRAM_CERT_FILE
-            valueFrom:
-              secretKeyRef:
-                name: polybot-secret
-                key: TELEGRAM_CERT_FILE
-
           - name: SQS_QUEUE_URL
             valueFrom:
               secretKeyRef:
